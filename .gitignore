@@ -1,0 +1,44 @@
+# global setting
+
+# IntelliJ related
+**.iml
+**.ipr
+**.iws
+**.idea/
+
+# vscode
+**.vscode/
+
+
+
+### Flutter ###
+# Flutter/Dart/Pub related
+/flutter_web/**/doc/api/
+/flutter_web/.dart_tool/
+/flutter_web/.flutter-plugins
+/flutter_web/.flutter-plugins-dependencies
+/flutter_web/.fvm/
+/flutter_web/.packages
+/flutter_web/.pub-cache/
+/flutter_web/.pub/
+/flutter_web/build/
+/flutter_web/coverage/
+/flutter_web/lib/generated_plugin_registrant.dart
+# For library packages, don’t commit the pubspec.lock file.
+# Regenerating the pubspec.lock file lets you test your package against the latest compatible versions of its dependencies.
+# See https://dart.dev/guides/libraries/private-files#pubspeclock
+#pubspec.lock
+
+# Don`t use android
+/flutter_web/**android/
+
+# Don`t use IOS
+/flutter_web/**ios/
+
+# Don`t use window application
+/flutter_web/**windows/
+
+# Exceptions to above rules.
+!/packages/flutter_tools/test/data/dart_dependencies_test/**/.packages
+
+# End of https://www.toptal.com/developers/gitignore/api/flutter
