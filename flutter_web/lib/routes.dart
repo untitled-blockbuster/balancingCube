@@ -11,7 +11,7 @@ Route<dynamic> generateRoute(RouteSettings settings) {
   var routingData = settings.name!.getRoutingData;
   switch (routingData.route) {
     case mainPath:
-      return _getPageRoute(const HomePage(), settings);
+      return _getPageRoute(HomePage(), settings);
 
     case SecondPageRoute:
       String message = routingData['message'];
@@ -26,7 +26,7 @@ Route<dynamic> generateRoute(RouteSettings settings) {
           settings);
 
     default:
-      return _getPageRoute(const HomePage(), settings);
+      return _getPageRoute(HomePage(), settings);
   }
 }
 
