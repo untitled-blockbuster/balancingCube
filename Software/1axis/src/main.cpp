@@ -4,9 +4,7 @@
 #include "Wire.h"
 #include "PID.h"
 
-#define OUTPUT_READABLE_QUATERNION
-#define INTERRUPT_PIN 2
-#define SETPOINT -45.0
+#define SETPOINT 45
 #define DEADPOINT 30
 #define BREAK 2
 #define PWM_OUT 5
@@ -14,17 +12,19 @@
 #define FREQ 20000
 
 PIDController pid = {
-    1,    // Kp
-    0,  // Ki
-    0,   // Kd
-    0.02, // tau
-    -255, // PID limit min
-    255,  // PID limit max
-    -127, // pid limit min int
-    127,  // pid limit max int
+    57.4,   // Kp
+    245.6,  // Ki
+    0.05,   // Kd
+    0.02,   // tau
+    -255,   // PID limit min
+    255,    // PID limit max
+    -1,     // pid limit min int
+    1,      // pid limit max int
 };
+
 long double prevTime = 0;
 long double time = 0;
+long double lastResetTime = 0;
 
 MPU6050 mpu;
 
@@ -36,29 +36,15 @@ uint16_t fifoCount;
 uint8_t fifoBuffer[64];
 
 Quaternion q;        // [w, x, y, z]         quaternion container
-VectorInt16 aa;      // [x, y, z]            accel sensor measurements
-VectorInt16 aaReal;  // [x, y, z]            gravity-free accel sensor measurements
-VectorInt16 aaWorld; // [x, y, z]            world-frame accel sensor measurements
-VectorFloat gravity; // [x, y, z]            gravity vector
 float euler[3];      // [psi, theta, phi]    Euler angle container
-float ypr[3];        // [yaw, pitch, roll]   yaw/pitch/roll container and gravity vector
-
-uint8_t teapotPacket[14] = {'$', 0x02, 0, 0, 0, 0, 0, 0, 0, 0, 0x00, 0x00, '\r', '\n'};
-
-volatile bool mpuInterrupt = false;
-void dmpDataReady()
-{
-    mpuInterrupt = true;
-}
 
 void setup()
 {
     PIDController_Init(&pid);
 
     analogWriteFrequency(PWM_OUT, FREQ);
-    pinMode(BREAK, OUTPUT);
+    // pinMode(BREAK, OUTPUT);
     pinMode(REVERSE, OUTPUT);
-    digitalWrite(BREAK, HIGH);
 
     Wire.begin();
     Wire.setClock(400000);
@@ -67,10 +53,9 @@ void setup()
         ;
 
     mpu.initialize();
-    pinMode(INTERRUPT_PIN, INPUT);
+    delay(100);
 
-    while (Serial.available() && Serial.read())
-        ;
+    while (Serial.available() && Serial.read());
 
     devStatus = mpu.dmpInitialize();
 
@@ -90,7 +75,6 @@ void setup()
     mpu.PrintActiveOffsets();
     mpu.setDMPEnabled(true);
 
-    attachInterrupt(digitalPinToInterrupt(INTERRUPT_PIN), dmpDataReady, RISING);
     mpuIntStatus = mpu.getIntStatus();
     dmpReady = true;
     packetSize = mpu.dmpGetFIFOPacketSize();
@@ -103,34 +87,32 @@ void loop()
 
     if (mpu.dmpGetCurrentFIFOPacket(fifoBuffer))
     {
-        // Processing connection
-        mpu.dmpGetQuaternion(&q, fifoBuffer); /*
-         Serial.print(q.w + 1, 4);
-         Serial.print(",");
-         Serial.print(q.x + 1, 4);
-         Serial.print(",");
-         Serial.print(q.y + 1, 4);
-         Serial.print(",");
-         Serial.print(q.z + 1, 4);
-         Serial.print(",");
-         Serial.print("\n");*/
-
+        mpu.dmpGetQuaternion(&q, fifoBuffer);
         mpu.dmpGetEuler(euler, &q);
-        // deltaTime = (time - prevTime)
         long double delta = time - prevTime;
-        float angle = euler[0] * 180 / M_PI;
-        if (abs(angle) <= DEADPOINT || abs(angle) >= 90 - DEADPOINT)
+        float angle = euler[2] * 180 / M_PI;
+
+        Serial.printf("p: %f\ti: %f\td: %f\n", pid.prevError * pid.Kp, pid.integrator * pid.Ki, pid.differentiator);
+        Serial.printf("Kp: %f\tKi: %f\tKd: %f\tout: %f\tangle: %f\tinteg: %f\n", pid.Kp, pid.Ki, pid.Kd, pid.out, angle, pid.integrator);
+        Serial.println();
+
+        // if (angle <= DEADPOINT || abs(angle) >= 90 - DEADPOINT)
+        if(angle <= 35 || angle >= 115)
         {
             // 제어 가능범위 벗어남
             analogWrite(PWM_OUT, 255);
             digitalWrite(BREAK, LOW);
-            // Serial.println("DEAD");
             return;
         }
-        digitalWrite(BREAK, HIGH);
+        else {
+            digitalWrite(BREAK, HIGH);
+        }
+
         PIDController_Update(&pid, SETPOINT, angle, delta);
-        digitalWrite(REVERSE, pid.out < 0);
-        analogWrite(PWM_OUT, 255 - abs(pid.out));
+        digitalWrite(REVERSE, pid.out > 0);         // CW / CCW control
+        analogWrite(PWM_OUT, 255.0 - abs(pid.out));   // motor speed control
+
+        // to tuning PID
         if (Serial.available())
         {
             char input = Serial.read();
@@ -148,14 +130,24 @@ void loop()
             case '5':
                 pid.Ki -= 0.1;
                 break;
+
+            case '7':
+                pid.Kd += 0.01;
+                break;
+            case '8':
+                pid.Kd -= 0.01;
+                break;
             }
         }
-        Serial.printf("p: %f\ti: %f\td: %f\n", pid.prevError * pid.Kp, pid.integrator * pid.Ki, pid.differentiator);
-        //Serial.printf("error: %f\tprevError: %f\tdeltaTime: %d\tKd: %f\n", SETPOINT-angle, pid.prevError, delta, pid.Kd);
-        //Serial.printf("time: %f\tprevTime: %f\n", time, prevTime);
-        Serial.printf("Kp: %f\tKi: %f\tKd: %f\tout: %f\tangle: %f\tinteg: %f\n", pid.Kp, pid.Ki, pid.Kd, pid.out, angle, pid.integrator);
-        Serial.println();
     }
+
+    if (time - lastResetTime > 30) {
+        pid.integrator = 0;
+        lastResetTime = time;
+    }
+
+
+    // time update
     prevTime = time;
     time = micros() / (long double)1000000;
 }
