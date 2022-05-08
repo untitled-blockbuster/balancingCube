@@ -30,7 +30,7 @@ float PIDController_Update(PIDController *pid, float setpoint, float measurement
 	/*
 	* Integral
 	*/
-	// pid->integrator += error * T;
+	// pid->integrator += pid->Ki * error;
     pid->integrator = pid->integrator + 0.5f * pid->Ki * T * (error + pid->prevError);
 
 	// Anti-wind-up via integrator clamping
