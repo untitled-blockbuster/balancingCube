@@ -1,0 +1,8 @@
+# 3D printer
+*.gcode
+
+# CNC
+*.txt
+
+# Not for Github (For record)
+/1축/CNC/프레임/벡터 합치기 몰라서 일일이 선택했던 프레임.crv3d
