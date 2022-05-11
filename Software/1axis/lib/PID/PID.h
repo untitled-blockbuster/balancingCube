@@ -1,8 +1,12 @@
 #ifndef PID_CONTROLLER_H
 #define PID_CONTROLLER_H
 
-typedef struct {
+class PID
+{
+private:
+	void Init();
 
+public:
 	/* Controller gains */
 	float Kp;
 	float Ki;
@@ -14,26 +18,30 @@ typedef struct {
 	/* Output limits */
 	float limMin;
 	float limMax;
-	
+
 	/* Integrator limits */
 	float limMinInt;
 	float limMaxInt;
 
-	/* Sample time (in seconds) */
-	// float T;
-
 	/* Controller "memory" */
 	float integrator;
-	float prevError;			/* Required for integrator */
+	float prevError; /* Required for integrator */
 	float differentiator;
-	float prevMeasurement;		/* Required for differentiator */
+	float prevMeasurement; /* Required for differentiator */
 
 	/* Controller output */
 	float out;
 
-} PIDController;
+	PID(
+		float Kp,
+		float Ki,
+		float Kd,
+		float tau,
+		float limMin,
+		float limMax,
+		float limMinInt,
+		float limMaxInt);
 
-void  PIDController_Init(PIDController *pid);
-float PIDController_Update(PIDController *pid, float setpoint, float measurement, float T);
-
+	void Update(float setpoint, float measurement, float T);
+};
 #endif

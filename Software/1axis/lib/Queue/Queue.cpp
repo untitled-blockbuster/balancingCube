@@ -1,34 +1,22 @@
 #include <stdlib.h>
 #include <Queue.h>
 
-typedef struct Node
-{
-    double data;
-    Node *next;
-} Node;
-
-typedef struct QueueStruct
-{
-    Node *front;
-    Node *back;
-    int size;
-} QueueStruct;
-
-void InitQueue(QueueStruct **queue)
+void initQueue(QueueStruct **queue)
 {
     (*queue) = (QueueStruct *)malloc(sizeof(QueueStruct));
     (*queue)->front = (*queue)->back = NULL;
     (*queue)->size = 0;
 }
 
-Node *CreateNode(int data)
+Node *createNode(double data)
 {
     Node *node = (Node *)malloc(sizeof(Node));
     node->data = data;
     node->next = NULL;
     return node;
 }
-void EnQueue(QueueStruct **queue, Node *node)
+
+void enQueue(QueueStruct **queue, Node *node)
 {
     if ((*queue)->size == 0)
     {
@@ -42,20 +30,24 @@ void EnQueue(QueueStruct **queue, Node *node)
 
     (*queue)->size++;
 }
-
-Node *DeQueue(QueueStruct **queue)
+Node *deQueue(QueueStruct **queue)
 {
     Node *n = (*queue)->front;
     (*queue)->front = n->next;
     (*queue)->size--;
     return n;
 }
-void DestroyQueue(QueueStruct **queue)
+int getNodeCount(QueueStruct **queue)
 {
-    int cnt = (*queue)->size;
+    return (*queue)->size;
+}
+
+void destroyQueue(QueueStruct **queue)
+{
+    int cnt = getNodeCount(queue);
     for (int i = 0; i < cnt; i++)
     {
-        Node *n = DeQueue(queue);
+        Node *n = deQueue(queue);
         free(n);
     }
     (*queue)->front = (*queue)->back = NULL;
@@ -63,22 +55,35 @@ void DestroyQueue(QueueStruct **queue)
     free(*queue);
 }
 
-Queue::Queue()
+Queue::Queue(int size)
 {
-    InitQueue(&q);
+    initQueue(&q);
+    this->size = size;
+    for (int i = 0; i < size; i++)
+    {
+        push(0);
+    }
 }
 void Queue::push(double value)
 {
-    EnQueue(&q, CreateNode(value));
+    enQueue(&q, createNode(value));
 }
 double Queue::pop()
 {
-    Node *n = DeQueue(&q);
+    Node *n = deQueue(&q);
     double output = n->data;
     free(n);
     return output;
 }
 void Queue::clear()
 {
-    DestroyQueue(&q);
+    destroyQueue(&q);
+}
+double Queue::UpdateQ(double value)
+{
+    push(value);
+    double out = pop();
+    sum += value - out;
+    avg = sum / size;
+    return out;
 }

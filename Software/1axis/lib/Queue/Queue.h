@@ -2,23 +2,38 @@
 #define _Queue
 #include <stdlib.h>
 
-typedef struct Node;
-typedef struct QueueStruct;
+typedef struct Node
+{
+    double data;
+    Node *next;
+} Node;
 
-void InitQueue(QueueStruct **queue);
+typedef struct QueueStruct
+{
+    Node *front;
+    Node *back;
+    int size = 0;
+} QueueStruct;
 
-Node *CreateNode(int data);
-void EnQueue(QueueStruct **queue, Node *node);
-Node *DeQueue(QueueStruct **queue);
-void DestroyQueue(QueueStruct **queue);
+void initQueue();
+Node *createNode();
+void endQueue();
+Node *deQueue();
+void destroyQueue();
 
 class Queue
 {
-public:
+private:
     QueueStruct *q = NULL;
-    Queue();
+    double sum = 0;
     void push(double value);
     double pop();
+
+public:
+    int size;
+    double avg;
+    Queue(int size);
     void clear();
+    double UpdateQ(double value);
 };
 #endif
