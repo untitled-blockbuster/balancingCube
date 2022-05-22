@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_web/routes.dart';
+import 'package:flutter_web/home.dart';
+import 'package:flutter_web/routeHandler.dart';
+import 'package:fluro/fluro.dart';
+import 'router.dart';
 
 void main() async {
   runApp(const App());
@@ -14,7 +17,9 @@ class App extends StatefulWidget {
 
 class _AppState extends State<App> {
   _AppState() {
-    setupLocator();
+    final router = FluroRouter();
+    Routes.configureRoutes(router);
+    Application.router = router;
   }
 
   @override
@@ -55,10 +60,7 @@ class Init {
     await Future.delayed(const Duration(milliseconds: 1000));
     MaterialApp res = MaterialApp(
       title: '로봇고 2조 졸업작품',
-      // theme: ThemeData.dark(),
-      navigatorKey: locator<NavigationService>().navigatorKey,
-      onGenerateRoute: generateRoute,
-      initialRoute: mainPath,
+      home: HomePage()
     ); // 초기 로딩 완료 시 띄울 앱 첫 화면
 
     return res;

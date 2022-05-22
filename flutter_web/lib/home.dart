@@ -1,12 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_web/routes.dart';
+import 'router.dart';
 
 class HomePage extends StatelessWidget {
   HomePage({Key? key}) : super(key: key);
-
-  Future onPressRouteButton() =>
-      locator<NavigationService>().navigateTo(SecondPageRoute,
-          queryParams: {"message": "query string test"});
   Size _screenSize = Size.zero;
 
   @override
@@ -25,10 +21,11 @@ class HomePage extends StatelessWidget {
                 child: Text("test container 컨테이너"), heightFactor: 1, widthFactor: 3),
           ),
           DefaultTextStyle(
-              style: const TextStyle(fontSize: 14),
+              style: const TextStyle(fontSize: 14, color: Colors.cyan),
               child: ListView(
                 children: [for (int i = 0; i < 100; i++) Text(i.toString())],
-              )),
+              ),
+              ),
           ElevatedButton(
               onPressed: () => {print(MediaQuery.of(context).size)},
               child: const Text("print screen size")),
@@ -36,7 +33,10 @@ class HomePage extends StatelessWidget {
             color: Colors.cyan,
             margin: EdgeInsets.only(top: 30),
             child: ElevatedButton(
-                onPressed: onPressRouteButton, child: const Text("to Second page")),
+                onPressed: () {
+                  Application.router.navigateTo(context, "/second");
+                },
+                child: const Text("to Second page")),
           ),
           Card(
             margin: const EdgeInsetsDirectional.only(top: 70, start: 30),
