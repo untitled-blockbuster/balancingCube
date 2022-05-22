@@ -10,7 +10,7 @@ class HomePage extends StatelessWidget {
     if (_screenSize == Size.zero) {
       _screenSize = MediaQuery.of(context).size;
     }
-    return Container(
+    return Material(
       color: Colors.white,
       child: Stack(
         children: [

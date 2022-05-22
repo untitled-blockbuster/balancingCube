@@ -62,7 +62,7 @@ var homePageHandler = Handler(
 );
 var secondPageHandler = Handler(
   handlerFunc: (BuildContext? context, Map<String, List<String>> params) {
-    return SecondPage(message: "test",);
+    return SecondPage();
   }
 );
 class Routes {

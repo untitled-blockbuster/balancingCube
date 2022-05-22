@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'router.dart';
 
 class SecondPage extends StatelessWidget {
-  const SecondPage({Key? key, required this.message}) : super(key: key);
+  const SecondPage({Key? key}) : super(key: key);
 
-  final String message;
+  final String message = "test";
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
+    return Material(
+      child: Scaffold(
         body: Center(
           child: Column(
             children: [
