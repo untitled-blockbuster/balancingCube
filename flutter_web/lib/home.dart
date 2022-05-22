@@ -14,14 +14,15 @@ class HomePage extends StatelessWidget {
     if (_screenSize == Size.zero) {
       _screenSize = MediaQuery.of(context).size;
     }
-    return MaterialApp(
-      home: Stack(
+    return Container(
+      color: Colors.white,
+      child: Stack(
         children: [
           Container(
             color: Colors.brown,
             margin: const EdgeInsetsDirectional.only(top: 30, start: 30),
             child: const Center(
-                child: Text("test container"), heightFactor: 1, widthFactor: 3),
+                child: Text("test container 컨테이너"), heightFactor: 1, widthFactor: 3),
           ),
           DefaultTextStyle(
               style: const TextStyle(fontSize: 14),
@@ -36,6 +37,18 @@ class HomePage extends StatelessWidget {
             margin: EdgeInsets.only(top: 30),
             child: ElevatedButton(
                 onPressed: onPressRouteButton, child: const Text("to Second page")),
+          ),
+          Card(
+            margin: const EdgeInsetsDirectional.only(top: 70, start: 30),
+            child: InkWell(
+              mouseCursor: MaterialStateMouseCursor.textable,
+              child: Text("Hover"),
+              onTap: () {},
+              onHover: (bool a) {
+                print(a);
+              },
+              hoverColor: Colors.red,
+            ),
           ),
           // ElevatedButton(onPressed: onPressRouteButton, child: Text("link")),
           startAnimation(_screenSize)
