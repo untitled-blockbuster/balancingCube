@@ -1,32 +1,36 @@
 #######################################
-# Syntax Coloring Map For Wire
+# Syntax Coloring Map For I2Cdev
 #######################################
 
 #######################################
 # Datatypes (KEYWORD1)
 #######################################
+I2Cdev	KEYWORD1
 
 #######################################
 # Methods and Functions (KEYWORD2)
 #######################################
 
-begin	KEYWORD2
-beginTransmission	KEYWORD2
-endTransmission	KEYWORD2
-requestFrom	KEYWORD2
-send	KEYWORD2
-receive	KEYWORD2
-onReceive	KEYWORD2
-onRequest	KEYWORD2
-setClock	KEYWORD2
-setSDA	KEYWORD2
-setSCL	KEYWORD2
+readBit	KEYWORD2
+readBitW	KEYWORD2
+readBits	KEYWORD2
+readBitsW	KEYWORD2
+readByte	KEYWORD2
+readBytes	KEYWORD2
+readWord	KEYWORD2
+readWords	KEYWORD2
+writeBit	KEYWORD2
+writeBitW	KEYWORD2
+writeBits	KEYWORD2
+writeBitsW	KEYWORD2
+writeByte	KEYWORD2
+writeBytes	KEYWORD2
+writeWord	KEYWORD2
+writeWords	KEYWORD2
 
 #######################################
 # Instances (KEYWORD2)
 #######################################
-
-Wire	KEYWORD2
 
 #######################################
 # Constants (LITERAL1)

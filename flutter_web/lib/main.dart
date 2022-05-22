@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_web/routes.dart';
+import 'package:flutter_web/home.dart';
+import 'package:flutter_web/routeHandler.dart';
+import 'package:fluro/fluro.dart';
+import 'router.dart';
 
 void main() async {
   runApp(const App());
@@ -9,16 +12,29 @@ class App extends StatefulWidget {
   const App({Key? key}) : super(key: key);
 
   @override
-  State<App> createState() => _AppState();
+  State<App> createState() {
+    return _AppState();
+    }
 }
 
 class _AppState extends State<App> {
   _AppState() {
-    setupLocator();
+    final router = FluroRouter();
+    Routes.configureRoutes(router);
+    Application.router = router;
   }
 
   @override
   Widget build(BuildContext context) {
+    final app = MaterialApp(
+      title: '로봇고 2조 졸업작품',
+      debugShowCheckedModeBanner: false,
+      onGenerateRoute: Application.router.generator,
+      // navigatorKey: locator<NavigationService>().navigatorKey,
+    );
+//    print("initial route = ${app.initialRoute}");
+    return app;
+    /*
     return FutureBuilder(
       future: Init.instance.initialize(context),
       builder: (context, AsyncSnapshot snapshot) {
@@ -42,9 +58,10 @@ class _AppState extends State<App> {
         }
       },
     );
+    */
   }
 }
-
+/*
 class Init {
   Init._();
 
@@ -55,12 +72,11 @@ class Init {
     await Future.delayed(const Duration(milliseconds: 1000));
     MaterialApp res = MaterialApp(
       title: '로봇고 2조 졸업작품',
-      // theme: ThemeData.dark(),
-      navigatorKey: locator<NavigationService>().navigatorKey,
-      onGenerateRoute: generateRoute,
-      initialRoute: mainPath,
+      onGenerateRoute: Application.router.generator,
+      home: HomePage(),
     ); // 초기 로딩 완료 시 띄울 앱 첫 화면
 
     return res;
   }
 }
+*/

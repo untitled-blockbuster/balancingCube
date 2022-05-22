@@ -1,16 +1,15 @@
 import 'package:flutter/material.dart';
+import 'router.dart';
 
 class SecondPage extends StatelessWidget {
-  const SecondPage({Key? key, required this.message, required this.onPressBack})
-      : super(key: key);
+  const SecondPage({Key? key}) : super(key: key);
 
-  final String message;
-  final Function onPressBack;
+  final String message = "test";
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
+    return Material(
+      child: Scaffold(
         body: Center(
           child: Column(
             children: [
@@ -29,7 +28,10 @@ class SecondPage extends StatelessWidget {
                 height: 20,
               ),
               ElevatedButton(
-                  onPressed: () => onPressBack(), child: const Text('Back')),
+                  onPressed: () {
+                    Application.router.navigateTo(context, "/");
+                  },
+                  child: const Text('Back')),
             ],
           ),
         ),
