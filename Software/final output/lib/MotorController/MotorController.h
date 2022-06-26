@@ -1,11 +1,12 @@
 #ifndef MotorController_H
 #define motorController_H
 
-#include <MPU6050_9Axis_MotionApps41.h>
+#include <MPU6050_6Axis_MotionApps20.h>
 #include <Servo.h>
 #include <PID.h>
 
 #define SETPOINT 45
+#define DEADZONE 40
 #define MOTOR_FREQ 20000
 #define MOTOR_ENABLE HIGH
 #define MOTOR_DISABLE LOW
@@ -15,26 +16,24 @@
 #define MOTOR_SPD_MIN 255
 #define BREAK_ON 60
 #define BREAK_OFF 0
-#define STATE_STANDUP 1
-#define STATE_NORMAL 2
+
+#define STATE_NORMAL 1
 #define STATE_DEAD 0
+#define STATE_DMP_NOT_READY -1
 
 class MotorController
 {
 public:
-    int state = 0;
-    MotorController(int AD0Pin,
-                    int MotorEnablePin,
-                    int MotorDirPin,
-                    int MotorPWMPin,
-                    int BreakPin,
-                    int Kp, int Ki, int Kd);
-    void initialize();
-    void update(long double T);
-    double *getYRP() { return YRP; }
-    double getYaw() { return YRP[0]; }
-    double getRoll() { return YRP[1]; }
-    double getPitch() { return YRP[2]; }
+    int state = STATE_DMP_NOT_READY;
+    MotorController(
+        int MotorEnablePin,
+        int MotorDirPin,
+        int MotorPWMPin,
+        int AD0Pin,
+        int Kp, int Ki, int Kd);
+    void init();
+    void updateState();
+    void updateMotor();
 
 private:
     double YRP[3];
@@ -42,11 +41,12 @@ private:
     int MotorEnablePin;
     int MotorDirPin;
     int MotorPWMPin;
-    int BreakPin;
     long double prevTime;
-    long double lastResetTime;
-    MPU6050 mpu = MPU6050(0x69);
-    Servo MotorBreak;
+    bool dmpReady = false;
+    float angle;
+    float prevAngle;
+    uint8_t fifoBuffer[64];
+    MPU6050 mpu(0x69);
     PID pid;
     long double getTime() { return micros() * 0.000001; }
 };

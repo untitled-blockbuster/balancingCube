@@ -16,8 +16,6 @@ PID::PID(
 	this->tau = tau;
 	this->limMin = limMin;
 	this->limMax = limMax;
-	this->limMinInt = limMinInt;
-	this->limMaxInt = limMaxInt;
 	Init();
 }
 
@@ -46,9 +44,7 @@ void PID::Update(float setpoint, float measurement, float T)
 	|*|	Integral
 	\*/
 	// integrator += Ki * error;
-	integrator += 0.5f * Ki * T * (error + prevError);
-
-	// apply limit
+	integrator = integrator + 0.5f * Ki * T * (error + prevError);
 	if (integrator > limMaxInt)
 		integrator = limMaxInt;
 	else if (integrator < limMinInt)
@@ -65,15 +61,15 @@ void PID::Update(float setpoint, float measurement, float T)
 	/*\
 	|*|	Compute output and apply limits
 	\*/
-	out = proportional + integrator * Ki + differentiator;
+	out = proportional + integrator + differentiator;
 	if (out > limMax)
 		out = limMax;
 	else if (out < limMin)
 		out = limMin;
 
 	/*\
-|*|	update memory
-\*/
+	|*|	update memory
+	\*/
 	prevError = error;
 	prevMeasurement = measurement;
 }
