@@ -1,5 +1,16 @@
 #include "PID.h"
-
+PID::PID()
+{
+	this->Kp = 0;
+	this->Ki = 0;
+	this->Kd = 0;
+	this->tau = 0;
+	this->limMin = 0;
+	this->limMax = 0;
+	this->limMinInt = 0;
+	this->limMaxInt = 0;
+	Init();
+}
 PID::PID(
 	float Kp,
 	float Ki,
@@ -16,6 +27,8 @@ PID::PID(
 	this->tau = tau;
 	this->limMin = limMin;
 	this->limMax = limMax;
+	this->limMinInt = limMinInt;
+	this->limMaxInt = limMaxInt;
 	Init();
 }
 
@@ -43,6 +56,10 @@ void PID::Update(float setpoint, float measurement, float T)
 	/*\
 	|*|	Integral
 	\*/
+	// apply clamping
+	if ((error < 0 && integrator > 0) ||
+		(error > 0 && integrator < 0))
+		integrator = 0;
 	// integrator += Ki * error;
 	integrator = integrator + 0.5f * Ki * T * (error + prevError);
 	if (integrator > limMaxInt)

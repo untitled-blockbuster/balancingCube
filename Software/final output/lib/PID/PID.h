@@ -30,6 +30,7 @@ public:
 	/* Controller output */
 	float out;
 
+	PID();
 	PID(
 		float Kp,
 		float Ki,
