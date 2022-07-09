@@ -18,10 +18,8 @@ public:
 	/* Output limits */
 	float limMin;
 	float limMax;
-
-	/* Integrator limits */
-	float limMinInt;
 	float limMaxInt;
+	float limMinInt;
 
 	/* Controller "memory" */
 	float integrator;
@@ -32,6 +30,7 @@ public:
 	/* Controller output */
 	float out;
 
+	PID();
 	PID(
 		float Kp,
 		float Ki,
