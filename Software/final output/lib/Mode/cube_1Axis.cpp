@@ -40,47 +40,50 @@ void Cube_1Axis::setup1Axis()
             digitalWrite(red_led, ledState);
             ledState = !ledState;
         }
-        for (int i = 0; i < 3; i++)
-            controller[i].updateSensor();
+        for (MotorController &c : controller)
+            c.updateSensor();
 
         now = micros() * 0.000001;
     }
-    for (int i = 0; i < 3; i++)
-        controller[i].setOffset();
-    digitalWrite(red_led, LOW);
-    Serial.println("all offset setting complete");
-    for (int i = 0; i < 5; i++)
-    { // blink orange led when finish init
-        digitalWrite(orange_led, HIGH);
-        delay(100);
-        digitalWrite(orange_led, LOW);
-        delay(100);
-    }
+    setOffset();
     Serial.println("loop start");
 }
 
 void Cube_1Axis::loop1Axis()
 {
-    Serial.println("m1,m2,m3,o0");
-    for (int i = 0; i < 3; i++)
+    for (MotorController &c : controller)
     {
-        if (controller[i].state == STATE_DMP_NOT_READY)
+        if (c.state == STATE_DMP_NOT_READY)
         {
             // alram error
             digitalWrite(red_led, HIGH);
             return;
         }
-        controller[i].updateSensor();
+        c.updateSensor();
     }
-    Serial.println("0");
-    for (int i = 0; i < 3; i++)
+    for (MotorController &c : controller)
     {
-        if (controller[i].state == STATE_DEAD)
-            controller[i].stopMotor();
+        if (c.state == STATE_DEAD)
+            c.stopMotor();
         else
         {
-            controller[i].updateMotor();
+            c.updateMotor();
             return;
         }
+    }
+}
+
+void Cube_1Axis::setOffset()
+{
+    for (MotorController &c : controller)
+        c.setOffset();
+    digitalWrite(red_led, LOW);
+    Serial.println("all offset setting complete");
+    for (int i = 0; i < 7; i++)
+    { // blink orange led when finish init
+        digitalWrite(orange_led, HIGH);
+        delay(100);
+        digitalWrite(orange_led, LOW);
+        delay(100);
     }
 }
